@@ -1,13 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.news-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-card-image {
+  width: 100%;
+  height: 180px;
+  /* Adjust as needed */
+  object-fit: cover;
+}
+
+.news-card-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.news-card-title {
+  font-weight: bold;
+  font-size: 1.125rem;
+  /* 18px */
+  margin-bottom: 8px;
+}
+
+.news-card-description {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 12px;
+  flex-grow: 1;
+}
+
+.news-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.news-card-source {
+  font-weight: 600;
+}
+
+.category-button {
+  @apply px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200;
+}
+
+.category-button.active {
+  @apply bg-blue-600 text-white;
+}
+
+.category-button:not(.active) {
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
 }
