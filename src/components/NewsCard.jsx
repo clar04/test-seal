@@ -16,7 +16,7 @@ const NewsCard = ({ title, image, description, link, source, pubDate }) => {
           src={image}
           alt={title}
           className="news-card-image"
-          onError={(e) => { e.target.onerror = null; e.target.src="/placeholder.png" }} // Placeholder for broken images
+          onError={(e) => { e.target.onerror = null; e.target.src="/placeholder.png" }} 
         />
       )}
       <div className="news-card-content">
@@ -30,7 +30,7 @@ const NewsCard = ({ title, image, description, link, source, pubDate }) => {
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 self-end"
+          className="mt-4 inline-block bg-brown-ish text-white px-4 py-2 rounded hover:bg-dark-blue self-end"
         >
           Read More
         </a>
