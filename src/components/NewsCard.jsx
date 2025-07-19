@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const NewsCard = ({ title, image, description, link, source, pubDate }) => {
   const stripHtml = (html) => {
@@ -7,6 +8,7 @@ const NewsCard = ({ title, image, description, link, source, pubDate }) => {
   };
 
   const cleanDescription = description ? stripHtml(description) : 'No description available.';
+  const encodedTitle = encodeURIComponent(title);
 
   return (
     <div className="news-card">
@@ -15,7 +17,7 @@ const NewsCard = ({ title, image, description, link, source, pubDate }) => {
           src={image}
           alt={title}
           className="news-card-image"
-          onError={(e) => { e.target.onerror = null; e.target.src="/placeholder.png" }} 
+          onError={(e) => { e.target.onerror = null; e.target.src="/placeholder.png" }}
         />
       )}
       <div className="news-card-content">
@@ -25,14 +27,12 @@ const NewsCard = ({ title, image, description, link, source, pubDate }) => {
           <span className="news-card-source capitalize">{source}</span>
           {pubDate && <span className="news-card-date">{new Date(pubDate).toLocaleDateString()}</span>}
         </div>
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to={`/news/${source}/terbaru/${encodedTitle}`} 
           className="mt-4 inline-block bg-brown-ish text-white px-4 py-2 rounded hover:bg-dark-blue self-end"
         >
           Read More
-        </a>
+        </Link>
       </div>
     </div>
   );

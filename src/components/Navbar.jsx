@@ -2,7 +2,7 @@ import React from 'react';
 
 const Navbar = () => {
   const navItems = [
-    { name: 'Beranda', href: '#' },
+    { name: 'Beranda', href: '/' },
     { name: 'Kesehatan', href: '#' },
     { name: 'Otomotif', href: '#' },
     { name: 'Politik', href: '#' },
@@ -12,7 +12,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-dark-blue shadow-lg py-4"> 
+    <nav className="bg-dark-blue shadow-lg py-4 fixed top-0 z-50 w-full"> 
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           {/* Logo */}
@@ -30,7 +30,7 @@ const Navbar = () => {
               d="M19.428 15.428a2 2 0 00-2.828-2.828L6.428 17.572A2 2 0 0017.572 6.428l-2.828 2.828a2 2 0 002.828 2.828z"
             ></path>
           </svg>
-          <a href="#" className="text-xl font-bold text-white"> 
+          <a href="/" className="text-xl font-bold text-white"> 
             Berita Kini
           </a>
         </div>
