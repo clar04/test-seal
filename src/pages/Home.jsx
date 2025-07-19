@@ -3,7 +3,7 @@ import axios from 'axios';
 import NewsCard from '../components/NewsCard';
 import CategoryMenu from '../components/CategoryMenu';
 
-const API_BASE_URL = 'https://api-berita-indonesia.vercel.app'; // Replace with the actual API base URL if different
+const API_BASE_URL = 'https://api-berita-indonesia.vercel.app'; 
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState('terbaru');
@@ -11,7 +11,8 @@ const Home = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const newsPerPage = 9; 
   const categories = [
     { name: 'Latest', path: 'terbaru' },
     { name: 'National', path: 'nasional' },
@@ -34,23 +35,18 @@ const Home = () => {
     { name: 'Suara', id: 'suara' },
     { name: 'Tempo', id: 'tempo' },
     { name: 'Tribun', id: 'tribun' },
-    // JPNN and Kumparan only have 'terbaru' category based on your API structure.
-    // If you want to include them, you'll need to handle the category filtering for them.
-    // For simplicity, I'm excluding them from the general category selection for now.
   ];
 
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       setError(null);
+      setCurrentPage(1); // Reset to first page on category/source change
       try {
         let apiUrl = `${API_BASE_URL}/${selectedSource}/${selectedCategory}`;
 
         // Special handling for JPNN and Kumparan as they only have 'terbaru' category
         if (['jpnn', 'kumparan'].includes(selectedSource) && selectedCategory !== 'terbaru') {
-            // If a specific category other than 'terbaru' is selected for these sources,
-            // we should probably just default to 'terbaru' or show an error/empty state.
-            // For now, let's default to 'terbaru' for these specific sources if a non-terbaru category is chosen.
             apiUrl = `${API_BASE_URL}/${selectedSource}/terbaru`;
             console.warn(`Category '${selectedCategory}' not available for ${selectedSource}. Displaying 'terbaru' news.`);
         }
@@ -73,9 +69,92 @@ const Home = () => {
     fetchNews();
   }, [selectedCategory, selectedSource]);
 
+  // Pagination logic
+  const indexOfLastNews = currentPage * newsPerPage;
+  const indexOfFirstNews = indexOfLastNews - newsPerPage;
+  const currentNews = news.slice(indexOfFirstNews, indexOfLastNews);
+
+  const totalPages = Math.ceil(news.length / newsPerPage);
+
+  const paginate = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top when changing page
+  };
+
+  const renderPaginationButtons = () => {
+    const pageNumbers = [];
+    const maxPageButtons = 5; // Maximum number of page buttons to show
+
+    // Always show first page
+    pageNumbers.push(1);
+
+    // Logic to show ellipsis and a range of pages around the current page
+    let startPage = Math.max(2, currentPage - Math.floor(maxPageButtons / 2) + 1);
+    let endPage = Math.min(totalPages - 1, currentPage + Math.floor(maxPageButtons / 2) - 1);
+
+    if (startPage > 2) {
+      pageNumbers.push('...');
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    if (endPage < totalPages - 1) {
+      pageNumbers.push('...');
+    }
+
+    if (totalPages > 1 && !pageNumbers.includes(totalPages)) {
+      pageNumbers.push(totalPages);
+    }
+    
+    // Remove duplicates and sort numerically
+    const uniquePageNumbers = [...new Set(pageNumbers)].sort((a, b) => {
+        if (a === '...') return 1; 
+        if (b === '...') return -1;
+        return a - b;
+    });
+
+
+    return (
+      <div className="flex justify-center items-center mt-8 space-x-2">
+        <button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-1 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        {uniquePageNumbers.map((number, index) => (
+          <button
+            key={index}
+            onClick={() => number !== '...' && paginate(number)}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === number
+                ? 'bg-dark-blue text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            } ${number === '...' ? 'cursor-default' : ''}`}
+            disabled={number === '...'}
+          >
+            {number}
+          </button>
+        ))}
+        <button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+    );
+  };
+
+
   return (
     <div className="container mx-auto p-4 max-w-7xl">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Berita Kini</h1>
+      <h1 className="text-4xl font-bold text-dark-blue mb-8 text-center">Berita Kini</h1> {/* Changed text color to dark-blue */}
 
       {/* News Source Selection */}
       <div className="mb-8 bg-white p-4 rounded-lg shadow-sm">
@@ -93,32 +172,34 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Category Menu */}
+
       <CategoryMenu
         categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
       />
 
-      {loading && <p className="text-center text-lg text-blue-600 mt-8">Loading news...</p>}
+      {loading && <p className="text-center text-lg text-dark-blue mt-8">Loading news...</p>} 
       {error && <p className="text-center text-lg text-red-600 mt-8">{error}</p>}
       {!loading && news.length === 0 && !error && (
         <p className="text-center text-lg text-gray-600 mt-8">No news found for the selected category and source.</p>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {news.map((item, index) => (
+        {currentNews.map((item, index) => ( 
           <NewsCard
             key={index}
             title={item.title}
             image={item.image}
             description={item.description}
             link={item.link}
-            source={selectedSource} // Pass the selected source to the card
+            source={selectedSource}
             pubDate={item.pubDate}
           />
         ))}
       </div>
+
+      {!loading && news.length > 0 && renderPaginationButtons()}
     </div>
   );
 };

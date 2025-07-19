@@ -8,7 +8,11 @@ const CategoryMenu = ({ categories, selectedCategory, onSelectCategory }) => {
         {categories.map((category) => (
           <button
             key={category.path}
-            className={`category-button ${selectedCategory === category.path ? 'active' : ''}`}
+            className={`category-button ${
+              selectedCategory === category.path
+                ? 'active' 
+                : '' 
+            }`}
             onClick={() => onSelectCategory(category.path)}
           >
             {category.name}

@@ -1,7 +1,6 @@
 import React from 'react';
 
 const NewsCard = ({ title, image, description, link, source, pubDate }) => {
-  // Function to strip HTML tags from a string
   const stripHtml = (html) => {
     let doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || "";

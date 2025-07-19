@@ -12,12 +12,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md py-4">
+    <nav className="bg-dark-blue shadow-lg py-4"> 
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           {/* Logo */}
           <svg
-            className="w-8 h-8 text-blue-600"
+            className="w-8 h-8 text-white" 
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -30,7 +30,7 @@ const Navbar = () => {
               d="M19.428 15.428a2 2 0 00-2.828-2.828L6.428 17.572A2 2 0 0017.572 6.428l-2.828 2.828a2 2 0 002.828 2.828z"
             ></path>
           </svg>
-          <a href="#" className="text-xl font-bold text-gray-900">
+          <a href="#" className="text-xl font-bold text-white"> 
             Berita Kini
           </a>
         </div>
@@ -39,16 +39,15 @@ const Navbar = () => {
             <li key={item.name}>
               <a
                 href={item.href}
-                className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200"
+                className="text-white hover:text-light-grey transition-colors duration-200" 
               >
                 {item.name}
               </a>
             </li>
           ))}
         </ul>
-        {/* Mobile menu button (optional, for full responsiveness) */}
         <div className="md:hidden">
-          <button className="text-gray-600 hover:text-blue-600 focus:outline-none">
+          <button className="text-white hover:text-light-grey focus:outline-none"> 
             <svg
               className="w-6 h-6"
               fill="none"

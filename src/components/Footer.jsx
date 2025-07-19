@@ -2,13 +2,12 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white py-10 mt-12">
+    <footer className="bg-dark-blue text-white py-10 mt-12"> 
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Logo and Copyright */}
         <div className="col-span-1 md:col-span-1">
           <div className="flex items-center space-x-2 mb-4">
             <svg
-              className="w-8 h-8 text-blue-400"
+              className="w-8 h-8 text-light-grey" 
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -23,32 +22,31 @@ const Footer = () => {
             </svg>
             <span className="text-xl font-bold">Berita Kini</span>
           </div>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-light-grey"> 
             © 2025 Berita Kini. All Rights Reserved.
           </p>
         </div>
 
-        {/* Telusuri Section */}
         <div>
           <h4 className="text-lg font-semibold mb-4">Telusuri</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li><a href="#" className="hover:text-blue-400">Beranda</a></li>
-            <li><a href="#" className="hover:text-blue-400">Kesehatan</a></li>
-            <li><a href="#" className="hover:text-blue-400">Otomotif</a></li>
-            <li><a href="#" className="hover:text-blue-400">Politik</a></li>
-            <li><a href="#" className="hover:text-blue-400">Olahraga</a></li>
-            <li><a href="#" className="hover:text-blue-400">Nasional</a></li>
-            <li><a href="#" className="hover:text-blue-400">Internasional</a></li>
+          <ul className="space-y-2 text-sm text-light-grey"> 
+            <li><a href="#" className="hover:text-brown-ish">Beranda</a></li> 
+            <li><a href="#" className="hover:text-brown-ish">Kesehatan</a></li>
+            <li><a href="#" className="hover:text-brown-ish">Otomotif</a></li>
+            <li><a href="#" className="hover:text-brown-ish">Politik</a></li>
+            <li><a href="#" className="hover:text-brown-ish">Olahraga</a></li>
+            <li><a href="#" className="hover:text-brown-ish">Nasional</a></li>
+            <li><a href="#" className="hover:text-brown-ish">Internasional</a></li>
           </ul>
         </div>
 
         {/* Bantuan Section */}
         <div>
           <h4 className="text-lg font-semibold mb-4">Bantuan</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li><a href="#" className="hover:text-blue-400">Kontak Kami</a></li>
-            <li><a href="#" className="hover:text-blue-400">Laporan Pembajakan</a></li>
-            <li><a href="#" className="hover:text-blue-400">Kebijakan</a></li>
+          <ul className="space-y-2 text-sm text-light-grey"> {/* Changed text color to light-grey */}
+            <li><a href="#" className="hover:text-brown-ish">Kontak Kami</a></li> {/* Changed hover color to brown-ish */}
+            <li><a href="#" className="hover:text-brown-ish">Laporan Pembajakan</a></li>
+            <li><a href="#" className="hover:text-brown-ish">Kebijakan</a></li>
           </ul>
         </div>
 
@@ -61,7 +59,7 @@ const Footer = () => {
               placeholder="Masukkan email Anda"
               className="px-4 py-2 rounded-l-md w-full text-gray-900 focus:outline-none"
             />
-            <button className="bg-blue-600 px-4 py-2 rounded-r-md hover:bg-blue-700">
+            <button className="bg-brown-ish px-4 py-2 rounded-r-md hover:bg-brown-ish-lighter"> {/* Changed button background and hover */}
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -80,13 +78,14 @@ const Footer = () => {
           </div>
           <h4 className="text-lg font-semibold mb-4">Ikuti Kami</h4>
           <div className="flex space-x-4">
-            <a href="#" className="text-gray-400 hover:text-blue-400">
+            {/* These image paths will need to be correctly mapped to your public folder or asset management */}
+            <a href="#" className="text-light-grey hover:text-brown-ish"> {/* Changed text color and hover */}
               <img src="/youtube-icon.png" alt="YouTube" className="w-6 h-6" />
             </a>
-            <a href="#" className="text-gray-400 hover:text-blue-400">
+            <a href="#" className="text-light-grey hover:text-brown-ish"> {/* Changed text color and hover */}
               <img src="/instagram-icon.png" alt="Instagram" className="w-6 h-6" />
             </a>
-            <a href="#" className="text-gray-400 hover:text-blue-400">
+            <a href="#" className="text-light-grey hover:text-brown-ish"> {/* Changed text color and hover */}
               <img src="/facebook-icon.png" alt="Facebook" className="w-6 h-6" />
             </a>
           </div>
