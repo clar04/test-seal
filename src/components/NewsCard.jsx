@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const NewsCard = ({ title, image, description, link, source, pubDate }) => {
+const NewsCard = ({ title, image, description, link, source, pubDate, category }) => { 
   const stripHtml = (html) => {
     let doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || "";
@@ -28,7 +28,7 @@ const NewsCard = ({ title, image, description, link, source, pubDate }) => {
           {pubDate && <span className="news-card-date">{new Date(pubDate).toLocaleDateString()}</span>}
         </div>
         <Link
-          to={`/news/${source}/terbaru/${encodedTitle}`} 
+          to={`/news/${source}/${category}/${encodedTitle}`} 
           className="mt-4 inline-block bg-brown-ish text-white px-4 py-2 rounded hover:bg-dark-blue self-end"
         >
           Read More

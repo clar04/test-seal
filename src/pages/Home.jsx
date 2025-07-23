@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NewsCard from '../components/NewsCard';
 import CategoryMenu from '../components/CategoryMenu';
 
-const API_BASE_URL = 'https://api-berita-indonesia.vercel.app'; 
+const API_BASE_URL = 'https://api-berita-indonesia.vercel.app';
 
 const Home = () => {
-  const [selectedCategory, setSelectedCategory] = useState('terbaru');
-  const [selectedSource, setSelectedSource] = useState('cnn');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Initialize states from URL or default values
+  const params = new URLSearchParams(location.search);
+  const initialCategory = params.get('category') || 'terbaru';
+  const initialSource = params.get('source') || 'cnn';
+
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedSource, setSelectedSource] = useState(initialSource);
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const newsPerPage = 9; 
+  const newsPerPage = 9;
   const categories = [
     { name: 'Latest', path: 'terbaru' },
     { name: 'National', path: 'nasional' },
@@ -37,11 +46,28 @@ const Home = () => {
     { name: 'Tribun', id: 'tribun' },
   ];
 
+  // Effect to update states when URL search params change
+  useEffect(() => {
+    const currentParams = new URLSearchParams(location.search);
+    const categoryFromUrl = currentParams.get('category') || 'terbaru';
+    const sourceFromUrl = currentParams.get('source') || 'cnn';
+
+    // Only update state if it's different from the URL param to avoid unnecessary re-renders
+    if (selectedCategory !== categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
+    if (selectedSource !== sourceFromUrl) {
+      setSelectedSource(sourceFromUrl);
+    }
+    // Reset page to 1 when category or source changes
+    setCurrentPage(1);
+  }, [location.search]);
+
+  // Effect to fetch news when selectedCategory or selectedSource changes
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       setError(null);
-      setCurrentPage(1); // Reset to first page on category/source change
       try {
         let apiUrl = `${API_BASE_URL}/${selectedSource}/${selectedCategory}`;
 
@@ -67,7 +93,15 @@ const Home = () => {
     };
 
     fetchNews();
-  }, [selectedCategory, selectedSource]);
+  }, [selectedCategory, selectedSource]); // Added selectedCategory and selectedSource to dependencies
+
+  const handleSelectCategory = (categoryPath) => {
+    navigate(`/?category=${categoryPath}&source=${selectedSource}`);
+  };
+
+  const handleSelectSource = (sourceId) => {
+    navigate(`/?category=${selectedCategory}&source=${sourceId}`);
+  };
 
   // Pagination logic
   const indexOfLastNews = currentPage * newsPerPage;
@@ -79,17 +113,15 @@ const Home = () => {
   const paginate = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top when changing page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const renderPaginationButtons = () => {
     const pageNumbers = [];
-    const maxPageButtons = 5; // Maximum number of page buttons to show
+    const maxPageButtons = 5;
 
-    // Always show first page
     pageNumbers.push(1);
 
-    // Logic to show ellipsis and a range of pages around the current page
     let startPage = Math.max(2, currentPage - Math.floor(maxPageButtons / 2) + 1);
     let endPage = Math.min(totalPages - 1, currentPage + Math.floor(maxPageButtons / 2) - 1);
 
@@ -108,10 +140,9 @@ const Home = () => {
     if (totalPages > 1 && !pageNumbers.includes(totalPages)) {
       pageNumbers.push(totalPages);
     }
-    
-    // Remove duplicates and sort numerically
+
     const uniquePageNumbers = [...new Set(pageNumbers)].sort((a, b) => {
-        if (a === '...') return 1; 
+        if (a === '...') return 1;
         if (b === '...') return -1;
         return a - b;
     });
@@ -154,7 +185,7 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-7xl">
-      <h1 className="text-4xl font-bold text-dark-blue mb-8 text-center">Berita Kini</h1> {/* Changed text color to dark-blue */}
+      <h1 className="text-4xl font-bold text-dark-blue mb-8 text-center">Berita Kini</h1>
 
       {/* News Source Selection */}
       <div className="mb-8 bg-white p-4 rounded-lg shadow-sm">
@@ -164,7 +195,7 @@ const Home = () => {
             <button
               key={source.id}
               className={`category-button ${selectedSource === source.id ? 'active' : ''}`}
-              onClick={() => setSelectedSource(source.id)}
+              onClick={() => handleSelectSource(source.id)}
             >
               {source.name}
             </button>
@@ -176,17 +207,17 @@ const Home = () => {
       <CategoryMenu
         categories={categories}
         selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
+        onSelectCategory={handleSelectCategory}
       />
 
-      {loading && <p className="text-center text-lg text-dark-blue mt-8">Loading news...</p>} 
+      {loading && <p className="text-center text-lg text-dark-blue mt-8">Loading news...</p>}
       {error && <p className="text-center text-lg text-red-600 mt-8">{error}</p>}
       {!loading && news.length === 0 && !error && (
         <p className="text-center text-lg text-gray-600 mt-8">No news found for the selected category and source.</p>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {currentNews.map((item, index) => ( 
+        {currentNews.map((item, index) => (
           <NewsCard
             key={index}
             title={item.title}
@@ -195,6 +226,7 @@ const Home = () => {
             link={item.link}
             source={selectedSource}
             pubDate={item.pubDate}
+            category={selectedCategory} // Pass selectedCategory to NewsCard
           />
         ))}
       </div>
