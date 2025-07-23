@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import RecommendedNews from '../components/RecommendedNews';
 
 const API_BASE_URL = 'https://api-berita-indonesia.vercel.app';
 
@@ -56,35 +57,34 @@ const NewsDetail = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
-      <h1 className="text-4xl font-bold text-dark-blue mb-6 text-center">{newsItem.title}</h1>
-      {newsItem.image && (
-        <img
-          src={newsItem.image}
-          alt={newsItem.title}
-          className="w-full h-96 object-cover rounded-lg mb-6"
-        />
-      )}
-      <div className="flex justify-between items-center text-sm text-gray-600 mb-4">
-        <span className="font-semibold capitalize">{newsItem.source}</span>
-        {newsItem.pubDate && <span>{new Date(newsItem.pubDate).toLocaleDateString()}</span>}
+    <div className="container mx-auto p-4 max-w-4xl">
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold text-dark-blue mb-4">{newsItem.title}</h1>
+        <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+          <span className="font-semibold capitalize">{source}</span>
+          {newsItem.pubDate && <span>{new Date(newsItem.pubDate).toLocaleDateString()}</span>}
+        </div>
+        {newsItem.image && (
+          <img
+            src={newsItem.image}
+            alt={newsItem.title}
+            className="w-full h-auto object-cover rounded-lg mb-6"
+          />
+        )}
+        <div className="text-gray-800 text-lg leading-relaxed space-y-4">
+          <p>{stripHtml(newsItem.description)}</p>
+          {newsItem.content && <p>{stripHtml(newsItem.content)}</p>}
+        </div>
+        <a
+          href={newsItem.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-block bg-brown-ish text-white px-6 py-3 rounded-lg hover:bg-dark-blue transition-colors duration-200"
+        >
+          Read Full Article
+        </a>
       </div>
-      <p className="text-gray-800 text-lg leading-relaxed text-justify">
-        {stripHtml(newsItem.description)}
-      </p>
-      {newsItem.content && (
-        <p className="text-gray-800 text-lg leading-relaxed text-justify mt-4">
-          {stripHtml(newsItem.content)}
-        </p>
-      )}
-      <a
-        href={newsItem.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-6 inline-block bg-brown-ish text-white px-6 py-3 rounded hover:bg-dark-blue transition-colors duration-200"
-      >
-        Read Full Article on Source
-      </a>
+      <RecommendedNews currentSource={source} currentCategory={category} currentTitle={title} />
     </div>
   );
 };
