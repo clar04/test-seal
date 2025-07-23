@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NewsCard from '../components/NewsCard';
@@ -6,11 +6,105 @@ import CategoryMenu from '../components/CategoryMenu';
 
 const API_BASE_URL = 'https://api-berita-indonesia.vercel.app';
 
+// Data structure mapping sources to their available categories
+const sourceCategories = {
+  cnn: [
+    { name: 'Latest', path: 'terbaru' },
+    { name: 'National', path: 'nasional' },
+    { name: 'International', path: 'internasional' },
+    { name: 'Economy', path: 'ekonomi' },
+    { name: 'Sports', path: 'olahraga' },
+    { name: 'Technology', path: 'teknologi' },
+    { name: 'Entertainment', path: 'hiburan' },
+  ],
+  cnbc: [
+    { name: 'Latest', path: 'terbaru' },
+    { name: 'News', path: 'news' },
+    { name: 'Market', path: 'market' },
+    { name: 'Entrepreneur', path: 'entrepreneur' },
+    { name: 'Syariah', path: 'syariah' },
+    { name: 'Tech', path: 'tech' },
+    { name: 'Lifestyle', path: 'lifestyle' },
+  ],
+  antara: [
+      { name: 'Latest', path: 'terbaru' },
+      { name: 'Politics', path: 'politik' },
+      { name: 'Law', path: 'hukum' },
+      { name: 'Economy', path: 'ekonomi' },
+      { name: 'Soccer', path: 'bola' },
+      { name: 'Sports', path: 'olahraga' },
+      { name: 'Humaniora', path: 'humaniora' },
+      { name: 'Lifestyle', path: 'lifestyle' },
+      { name: 'Entertainment', path: 'hiburan' },
+      { name: 'World', path: 'dunia' },
+      { name: 'Tekno', path: 'tekno' },
+      { name: 'Otomotif', path: 'otomotif' },
+  ],
+  merdeka: [
+      { name: 'Latest', path: 'terbaru' },
+      { name: 'Jakarta', path: 'jakarta' },
+      { name: 'World', path: 'dunia' },
+      { name: 'Style', path: 'gaya' },
+      { name: 'Sports', path: 'olahraga' },
+      { name: 'Technology', path: 'teknologi' },
+      { name: 'Otomotif', path: 'otomotif' },
+      { name: 'Health', path: 'sehat' },
+  ],
+  okezone: [
+      { name: 'Latest', path: 'terbaru' },
+      { name: 'Celebrity', path: 'celebrity' },
+      { name: 'Sports', path: 'sports' },
+      { name: 'Otomotif', path: 'otomotif' },
+      { name: 'Economy', path: 'economy' },
+      { name: 'Techno', path: 'techno' },
+      { name: 'Lifestyle', path: 'lifestyle' },
+      { name: 'Soccer', path: 'bola' },
+  ],
+  republika: [
+      { name: 'Latest', path: 'terbaru' },
+      { name: 'News', path: 'news' },
+      { name: 'Daerah', path: 'daerah' },
+      { name: 'Khazanah', path: 'khazanah' },
+      { name: 'Islam', path: 'islam' },
+      { name: 'International', path: 'internasional' },
+      { name: 'Soccer', path: 'bola' },
+      { name: 'Leisure', path: 'leisure' },
+  ],
+  sindonews: [
+      { name: 'Latest', path: 'terbaru' },
+      { name: 'National', path: 'nasional' },
+      { name: 'Ekbis', path: 'ekbis' },
+      { name: 'International', path: 'international' },
+      { name: 'Daerah', path: 'daerah' },
+      { name: 'Sports', path: 'sports' },
+      { name: 'Otomotif', path: 'otomotif' },
+      { name: 'Tekno', path: 'tekno' },
+      { name: 'Edukasi', path: 'edukasi' },
+      { name: 'Lifestyle', path: 'lifestyle' },
+      { name: 'Kalam', path: 'kalam' },
+  ],
+  tempo: [
+      { name: 'National', path: 'nasional' },
+      { name: 'Bisnis', path: 'bisnis' },
+      { name: 'Metro', path: 'metro' },
+      { name: 'World', path: 'dunia' },
+      { name: 'Soccer', path: 'bola' },
+      { name: 'Cantik', path: 'cantik' },
+      { name: 'Tekno', path: 'tekno' },
+      { name: 'Otomotif', path: 'otomotif' },
+      { name: 'Seleb', path: 'seleb' },
+      { name: 'Gaya', path: 'gaya' },
+      { name: 'Travel', path: 'travel' },
+  ],
+  jpnn: [{ name: 'Latest', path: 'terbaru' }],
+  kumparan: [{ name: 'Latest', path: 'terbaru' }],
+};
+
+
 const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Initialize states from URL or default values
   const params = new URLSearchParams(location.search);
   const initialCategory = params.get('category') || 'terbaru';
   const initialSource = params.get('source') || 'cnn';
@@ -22,16 +116,6 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const newsPerPage = 9;
-  const categories = [
-    { name: 'Latest', path: 'terbaru' },
-    { name: 'National', path: 'nasional' },
-    { name: 'International', path: 'internasional' },
-    { name: 'Economy', path: 'ekonomi' },
-    { name: 'Sports', path: 'olahraga' },
-    { name: 'Technology', path: 'teknologi' },
-    { name: 'Entertainment', path: 'hiburan' },
-    { name: 'Lifestyle', path: 'gayahidup' },
-  ];
 
   const newsSources = [
     { name: 'CNN', id: 'cnn' },
@@ -41,73 +125,69 @@ const Home = () => {
     { name: 'Okezone', id: 'okezone' },
     { name: 'Republika', id: 'republika' },
     { name: 'Sindo News', id: 'sindonews' },
-    { name: 'Suara', id: 'suara' },
     { name: 'Tempo', id: 'tempo' },
-    { name: 'Tribun', id: 'tribun' },
+    { name: 'JPNN', id: 'jpnn' },
+    { name: 'Kumparan', id: 'kumparan' },
   ];
 
-  // Effect to update states when URL search params change
   useEffect(() => {
     const currentParams = new URLSearchParams(location.search);
     const categoryFromUrl = currentParams.get('category') || 'terbaru';
     const sourceFromUrl = currentParams.get('source') || 'cnn';
 
-    // Only update state if it's different from the URL param to avoid unnecessary re-renders
-    if (selectedCategory !== categoryFromUrl) {
-      setSelectedCategory(categoryFromUrl);
-    }
-    if (selectedSource !== sourceFromUrl) {
-      setSelectedSource(sourceFromUrl);
-    }
-    // Reset page to 1 when category or source changes
+    setSelectedCategory(categoryFromUrl);
+    setSelectedSource(sourceFromUrl);
     setCurrentPage(1);
   }, [location.search]);
 
-  // Effect to fetch news when selectedCategory or selectedSource changes
-  useEffect(() => {
-    const fetchNews = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        let apiUrl = `${API_BASE_URL}/${selectedSource}/${selectedCategory}`;
+  const fetchNews = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-        // Special handling for JPNN and Kumparan as they only have 'terbaru' category
-        if (['jpnn', 'kumparan'].includes(selectedSource) && selectedCategory !== 'terbaru') {
-            apiUrl = `${API_BASE_URL}/${selectedSource}/terbaru`;
-            console.warn(`Category '${selectedCategory}' not available for ${selectedSource}. Displaying 'terbaru' news.`);
-        }
+    const availableCategories = sourceCategories[selectedSource]?.map(c => c.path) || [];
+    let categoryToFetch = selectedCategory;
 
-        const response = await axios.get(apiUrl);
-        if (response.data && response.data.data && response.data.data.posts) {
-          setNews(response.data.data.posts);
-        } else {
-          setNews([]);
-        }
-      } catch (err) {
-        console.error("Error fetching news:", err);
-        setError("Failed to fetch news. Please try again later.");
+    if (!availableCategories.includes(selectedCategory)) {
+      console.warn(`Category '${selectedCategory}' not available for ${selectedSource}. Defaulting to 'terbaru'.`);
+      categoryToFetch = 'terbaru';
+      navigate(`/?category=terbaru&source=${selectedSource}`, { replace: true });
+      return; 
+    }
+
+    try {
+      const apiUrl = `${API_BASE_URL}/${selectedSource}/${categoryToFetch}`;
+      const response = await axios.get(apiUrl);
+      if (response.data && response.data.data && response.data.data.posts) {
+        setNews(response.data.data.posts);
+      } else {
         setNews([]);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching news:", err);
+      setError("Failed to fetch news. The selected category may not be available for this source.");
+      setNews([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCategory, selectedSource, navigate]);
 
+  useEffect(() => {
     fetchNews();
-  }, [selectedCategory, selectedSource]); // Added selectedCategory and selectedSource to dependencies
+  }, [fetchNews]);
 
   const handleSelectCategory = (categoryPath) => {
     navigate(`/?category=${categoryPath}&source=${selectedSource}`);
   };
 
   const handleSelectSource = (sourceId) => {
-    navigate(`/?category=${selectedCategory}&source=${sourceId}`);
+    const newSourceCategories = sourceCategories[sourceId].map(c => c.path);
+    const categoryToSet = newSourceCategories.includes(selectedCategory) ? selectedCategory : 'terbaru';
+    navigate(`/?category=${categoryToSet}&source=${sourceId}`);
   };
 
-  // Pagination logic
   const indexOfLastNews = currentPage * newsPerPage;
   const indexOfFirstNews = indexOfLastNews - newsPerPage;
   const currentNews = news.slice(indexOfFirstNews, indexOfLastNews);
-
   const totalPages = Math.ceil(news.length / newsPerPage);
 
   const paginate = (pageNumber) => {
@@ -115,7 +195,7 @@ const Home = () => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
+  
   const renderPaginationButtons = () => {
     const pageNumbers = [];
     const maxPageButtons = 5;
@@ -187,10 +267,9 @@ const Home = () => {
     <div className="container mx-auto p-4 max-w-7xl">
       <h1 className="text-4xl font-bold text-dark-blue mb-8 text-center">Berita Kini</h1>
 
-      {/* News Source Selection */}
       <div className="mb-8 bg-white p-4 rounded-lg shadow-sm">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Select News Source</h2>
-        <div className="flex flex-wrap gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {newsSources.map((source) => (
             <button
               key={source.id}
@@ -205,7 +284,7 @@ const Home = () => {
 
 
       <CategoryMenu
-        categories={categories}
+        categories={sourceCategories[selectedSource] || []}
         selectedCategory={selectedCategory}
         onSelectCategory={handleSelectCategory}
       />
@@ -226,7 +305,7 @@ const Home = () => {
             link={item.link}
             source={selectedSource}
             pubDate={item.pubDate}
-            category={selectedCategory} // Pass selectedCategory to NewsCard
+            category={selectedCategory}
           />
         ))}
       </div>

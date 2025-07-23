@@ -80,3 +80,10 @@ body {
 .category-button:not(.active) {
   @apply bg-light-grey text-dark-blue hover:bg-light-grey-darker;
 }
+
+/* Added for better category layout */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
