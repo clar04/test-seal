@@ -44,8 +44,15 @@ Once the application is running, you can:
 * **Read an Article**: Click the "Read More" button on any news card to navigate to the detailed view.
 * **Go Back to the Main Page**: Use the navigation bar or the browser's back button to return to the home page.
 
-### Running Tests
+## Dependencies
+This project is built with the following main technologies:
 
-To launch the test runner in interactive watch mode, run:
-```sh
-npm test
+* **React**: A JavaScript library for building user interfaces.
+
+* **React Router**: For handling routing within the application.
+
+* **Axios**: For making HTTP requests to the news API.
+
+* **Tailwind CSS**: For styling the application with a utility-first CSS framework.
+
+* **Lucide React**: For beautiful and consistent icons.
